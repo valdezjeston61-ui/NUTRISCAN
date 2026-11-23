@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#087b3b">
+  <meta name="description" content="NutriScan food health analyzer with plate detection">
+  <title>NutriScan — Food Health Analyzer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brandmark">✳</div>
+        <div>
+          <h1>Nutri<span>Scan</span></h1>
+          <p>Scan • Understand • Eat healthier</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="online">Smart mode</div>
+        <button class="avatar" type="button" aria-label="Profile">U</button>
+      </div>
+    </header>
+
+    <section class="welcome">
+      <div>
+        <h2>Good food starts with knowing 🌿</h2>
+        <p>Discover what’s on your plate and make informed choices.</p>
+      </div>
+      <div class="date" id="today"></div>
+    </section>
+
+    <main class="grid-main">
+      <section class="panel scan-panel">
+        <div class="section-head">
+          <h3>① Scan your food</h3>
+          <span class="subtle">Reads your photo</span>
+        </div>
+
+        <div class="dropzone" id="dropzone">
+          <img id="preview" alt="Selected food preview" hidden>
+          <div class="overlay"></div>
+          <div class="upload-prompt">
+            <div class="upload-icon">📷</div>
+            <strong id="uploadTitle">Add a photo of your meal</strong>
+            <p id="uploadText">The analyzer will identify every food on the plate</p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" id="cameraBtn" type="button">📸 Open camera</button>
+          <button class="btn btn-secondary" id="uploadBtn" type="button">▧ Upload photo</button>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" hidden>
+
+        <div class="status" id="imageStatus" role="status">
+          <span class="spin"></span>
+          <span id="imageStatusText">Analyzing your photo…</span>
+          <button class="cancel" id="imageCancel" type="button">Cancel</button>
+        </div>
+        <div class="err" id="imageErr" role="alert"><span id="imageErrText"></span></div>
+
+        <div class="btn-row" id="retryRow" hidden>
+          <button class="btn btn-secondary" id="retryBtn" type="button">↻ Retry analysis</button>
+          <button class="btn btn-ghost" id="changePhotoBtn" type="button">Change photo</button>
+        </div>
+
+        <div class="panel plate" id="plate" hidden>
+          <h3 class="section-head" style="margin-bottom:10px">Detected on your plate</h3>
+          <ul class="plate-list" id="plateList"></ul>
+          <div class="plate-total">
+            <div>
+              <div class="subtle" style="margin-bottom:4px">Plate total</div>
+              <div class="plate-kcal"><span id="plateKcal">0</span><small>kcal</small></div>
+              <div class="subtle" id="plateMacros"></div>
+            </div>
+            <div class="grade" id="plateGrade">–</div>
+          </div>
+          <button class="btn btn-primary btn-block" id="plateAdd" type="button">Add plate to recent scans</button>
+        </div>
+
+        <div class="food-entry">
+          <label for="foodName">NO PHOTO? TYPE A FOOD NAME (OPTIONAL)</label>
+          <div class="input-wrap">
+            <input id="foodName" type="text" placeholder="e.g. grilled chicken salad" autocomplete="off">
+            <button class="btn btn-secondary" id="analyzeBtn" type="button">Analyze →</button>
+          </div>
+          <p class="hint">This field is only used when you have no photo. A photo is enough — the analyzer names every food itself.</p>
+        </div>
+      </section>
+
+      <section class="panel result-panel" aria-live="polite">
+        <div class="result-top">
+          <h3>② Food health report</h3>
+          <span class="pill" id="statusPill">READY TO SCAN</span>
+        </div>
+
+        <div class="food-title" id="foodTitle">Your plate, decoded.</div>
+        <p class="food-desc" id="foodDesc">
+          Upload a meal photo — the analyzer identifies every food on the plate and shows nutrition, benefits, and things to watch.
+        </p>
+
+        <div class="calorie-row">
+          <div>
+            <div class="cal-number" id="calories">—<small>kcal</small></div>
+            <small>Estimated energy per serving</small>
+          </div>
+          <div class="score">
+            <b id="score">—</b>
+            <span>HEALTH SCORE</span>
+          </div>
+        </div>
+
+        <div class="macro-grid">
+          <div class="macro"><div class="emoji">💪</div><b id="protein">—</b><span>Protein</span></div>
+          <div class="macro"><div class="emoji">🌾</div><b id="carbs">—</b><span>Carbs</span></div>
+          <div class="macro"><div class="emoji">💧</div><b id="fat">—</b><span>Total fat</span></div>
+        </div>
+
+        <div class="result-sections">
+          <div class="mini-card benefit"><h4>✦ Potential benefits</h4><ul id="benefits"><li>Awaiting food analysis</li></ul></div>
+          <div class="mini-card risk"><h4>⚠ Things to consider</h4><ul id="risks"><li>Awaiting food analysis</li></ul></div>
+        </div>
+
+        <div class="ingredients">
+          <h4>Possible ingredients</h4>
+          <div class="tags" id="ingredients"><span class="tag">Not analyzed yet</span></div>
+        </div>
+
+        <div class="alternatives">
+          <h4>🥗 Healthier alternatives</h4>
+          <div class="alt-list" id="alternatives">
+            <div class="alt"><div class="alt-icon">🥬</div><div><b>Explore whole foods</b><span>Choose minimally processed options</span></div></div>
+            <div class="alt"><div class="alt-icon">💧</div><div><b>Balance your plate</b><span>Add vegetables and water</span></div></div>
+          </div>
+        </div>
+
+        <p class="disclaimer">Nutrition values are estimates for a typical serving and are not laboratory measurements. Not medical advice.</p>
+      </section>
+    </main>
+
+    <section class="bottom-grid">
+      <div class="card">
+        <div class="card-head">
+          <h3>Recent scans</h3>
+          <button class="text-link" id="clearHistory" type="button">Clear history</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty">Your analyzed meals will appear here.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Daily nutrition nudge</h3>
+          <span class="pill">WELLNESS TIP</span>
+        </div>
+        <div class="insight-box">
+          <div class="insight-emoji">💡</div>
+          <div>
+            <b>Make half your plate colorful</b>
+            <p>Adding a variety of vegetables and fruits can help increase fiber and micronutrient intake.</p>
+          </div>
+        </div>
+        <p class="disclaimer">A balanced eating pattern matters more than any single meal. Choose portions and foods that fit your needs.</p>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabs" aria-label="Mobile navigation">
+    <button class="active" type="button" data-target="home"><span>⌂</span>Home</button>
+    <button type="button" data-target="history"><span>◷</span>History</button>
+    <button type="button" data-target="report"><span>▥</span>Insights</button>
+    <button type="button" id="profileBtn"><span>◎</span>Profile</button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="cameraModal" role="dialog" aria-modal="true" aria-label="Camera capture">
+    <div class="camera-box">
+      <div class="section-head">
+        <h3>Take a food photo</h3>
+        <button class="text-link" id="closeCamera" type="button">Close ✕</button>
+      </div>
+      <video id="cameraVideo" autoplay playsinline></video>
+      <div class="camera-actions">
+        <button class="btn btn-primary" id="captureBtn" type="button">Capture photo</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
